@@ -18,7 +18,7 @@ temps = []
 
 # send payload_pickle via socket
 def PickleObject(temp, time):
-	id = 1
+	id = 2
 	payload = [id, temp, time]
 	payloadTuple = tuple(payload)
 	payload_pickle = pickle.dumps(payloadTuple)
