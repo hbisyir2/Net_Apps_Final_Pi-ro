@@ -16,7 +16,7 @@ temps = []
 
 # send payload_pickle via socket
 def SendMessage(address, port, temp, time):
-	id = 1
+	id = 2
 	payload = [id, temp, time]
 	payload_pickle = pickle.dumps(payload)
 	
@@ -41,15 +41,18 @@ def read_temp():
 
 while True:
 	temp_c, temp_f = read_temp()
-	temps.append(temp_f)
-	count += 1
-	if count == 5:
-		timeRead = datetime.datetime.now()
-	elif count == 10:
-		tempToSend = sum(temps)/len(temps)
-		print(timeRead)
-		print(tempToSend)
-		del temps[:]
-		#SendMessage(ip_address, server_port, tempToSend, timeRead)
-		count = 0
-	time.sleep(1)
+  if temp_f == 0:
+    break
+  else:
+    temps.append(temp_f)
+    count += 1
+    if count == 5:
+      timeRead = datetime.datetime.now()
+    elif count == 10:
+      tempToSend = sum(temps)/len(temps)
+      print(timeRead)
+      print(tempToSend)
+      del temps[:]
+      #SendMessage(ip_address, server_port, tempToSend, timeRead)
+      count = 0
+	  time.sleep(1)
