@@ -4,6 +4,7 @@ import time
 import datetime
 import pickle
 import argparse
+import socket
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -16,11 +17,17 @@ count = 0
 temps = []
 
 # send payload_pickle via socket
-def SendMessage(address, port, temp, time):
+def PickleObject(temp, time):
 	id = 1
 	payload = [id, temp, time]
-	payload_pickle = pickle.dumps(payload)
+	payloadTuple = tuple(payload)
+	payload_pickle = pickle.dumps(payloadTuple)
 	
+def SendMessage(address, port, temp, time):
+	sentPickle = PickleObject(temp, time)
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((address, port))
+	s.send(sentPickle)
 
 def read_temp_raw():
 	f = open(device_file, 'r')
@@ -58,11 +65,12 @@ while True:
 		count += 1
 		if count == 5:
 			timeRead = datetime.datetime.now()
+			timeReadStr = timeRead.strftime('%Y/%m/%d %H:%M:%S')
 		elif count == 10:
 			tempToSend = sum(temps)/len(temps)
-			print(timeRead)
+			print(timeReadStr)
 			print(tempToSend)
 			del temps[:]
-			SendMessage(ip_address, port, tempToSend, timeRead)
+			SendMessage(ip_address, port, tempToSend, timeReadStr)
 			count = 0
 		time.sleep(1)
