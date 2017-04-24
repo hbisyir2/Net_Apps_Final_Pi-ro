@@ -3,6 +3,7 @@ import glob
 import time
 import datetime
 import pickle
+import argparse
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
@@ -16,7 +17,7 @@ temps = []
 
 # send payload_pickle via socket
 def SendMessage(address, port, temp, time):
-	id = 2
+	id = 1
 	payload = [id, temp, time]
 	payload_pickle = pickle.dumps(payload)
 	
@@ -38,21 +39,30 @@ def read_temp():
 		temp_c = float(temp_string) / 1000.0
 		temp_f = temp_c * 9.0 / 5.0 + 32.0
 		return temp_c, temp_f
+		
+# Parse command line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', required=True)
+parser.add_argument('-p', required=True)
+args = parser.parse_args()
+
+ip_address = args.i
+port = args.p
 
 while True:
 	temp_c, temp_f = read_temp()
-  if temp_f == 0:
-    break
-  else:
-    temps.append(temp_f)
-    count += 1
-    if count == 5:
-      timeRead = datetime.datetime.now()
-    elif count == 10:
-      tempToSend = sum(temps)/len(temps)
-      print(timeRead)
-      print(tempToSend)
-      del temps[:]
-      #SendMessage(ip_address, server_port, tempToSend, timeRead)
-      count = 0
-	  time.sleep(1)
+	if temp_f == 0:
+		break
+	else:
+		temps.append(temp_f)
+		count += 1
+		if count == 5:
+			timeRead = datetime.datetime.now()
+		elif count == 10:
+			tempToSend = sum(temps)/len(temps)
+			print(timeRead)
+			print(tempToSend)
+			del temps[:]
+			SendMessage(ip_address, port, tempToSend, timeRead)
+			count = 0
+		time.sleep(1)
