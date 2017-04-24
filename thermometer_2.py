@@ -58,11 +58,12 @@ while True:
 		count += 1
 		if count == 5:
 			timeRead = datetime.datetime.now()
+			timeReadStr = timeRead.strftime('%Y/%m/%d %H:%M:%S')
 		elif count == 10:
 			tempToSend = sum(temps)/len(temps)
-			print(timeRead)
+			print(timeReadStr)
 			print(tempToSend)
 			del temps[:]
-			SendMessage(ip_address, port, tempToSend, timeRead)
+			SendMessage(ip_address, port, tempToSend, timeReadStr)
 			count = 0
 		time.sleep(1)
