@@ -2,6 +2,8 @@ import datetime
 import time
 from Adafruit_LED_Backpack import SevenSegment
 import RPi.GPIO as GPIO
+import argparse
+import pickle
 
 LED1_red = 
 LED1_green = 
@@ -19,20 +21,34 @@ GPIO.output(LED2_green, GPIO.LOW)
 GPIO.output(LED2_red, GPIO.LOW)
 
 disp1 = SevenSegment.SevenSegment(address=0x70)
-disp2 = SevenSegment.SevenSegment(address=0x77)
+disp2 = SevenSegment.SevenSegment(address=0x74)
 
 disp1.begin()
 disp2.begin()
+disp1.clear()
+disp2.clear()
+disp1.write_display()
+disp2.write_display()
 disp1.set_colon(1)
 disp2.set_colon(1)
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', required=True)
+parser.add_argument('-p', required=True)
+args = parser.parse_args()
+
+ip_address = args.i
+port = args.p
+
 def UpdateDisplay(display, timeTaken):
+	timeTaken = datetime.datetime.strptime(timeTaken, '%Y/%m/%d %H:%M:%S')
 	timeNow = datetime.datetime.now()
 	timeDiff = timeNow - timeTaken
 	minutesDiff = timeDiff.seconds//60
 	secondsDiff = timeDiff.seconds%60
 	
 	display.clear()
+	display.set_colon(1)
 	displaym10 = minutesDiff//10
 	if displaym10 >= 10:
 		displaym10 = 9
@@ -45,15 +61,18 @@ def UpdateDisplay(display, timeTaken):
 	displays1 = secondsDiff%10
 	if displays1 >= 10:
 		displays1 = 9
-	display.set_digit(0, displaym10)
-	display.set_digit(1, displaym1)
+	
+	if displaym10 > 0:
+		display.set_digit(0, displaym10)
+	if displaym1 > 0 or displaym10 > 0:
+		display.set_digit(1, displaym1)
 	display.set_digit(2, displays10)
 	display.set_digit(3, displays1)
 	display.write_display()
 	
 def UpdateLED(LED_g, LED_r, temp):
-	lowThresh = 70
-	highThresh = 80
+	lowThresh = 80
+	highThresh = 90
 	if temp <= lowThresh:
 		GPIO.output(LED_r, GPIO.LOW)
 		GPIO.output(LED_g, GPIO.HIGH)
@@ -72,5 +91,8 @@ while True:
 	time.sleep(10)
 	# get JSON from server
 	# unpickle object
-	# seperate into variables
-	# call functions to update hardware
+	# unJSON object
+	UpdateDisplay(disp1, unjson['id_1']['time'])
+	UpdateDisplay(disp2, unjson['id_2']['time'])
+	UpdateLED(LED1_green, LED1_red, unjson['id_1']['temp'])
+	UpdateLED(LED2_green, LED2_red, unjson['id_2']['temp'])
