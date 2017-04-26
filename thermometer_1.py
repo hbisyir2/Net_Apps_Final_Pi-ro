@@ -73,4 +73,4 @@ while True:
 			del temps[:]
 			SendMessage(ip_address, port, tempToSend, timeReadStr)
 			count = 0
-		time.sleep(1)
+		time.sleep(0.5)
