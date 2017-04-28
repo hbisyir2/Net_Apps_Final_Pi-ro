@@ -11,6 +11,9 @@ sock2.bind(('', 8001))
 sock1.listen(3)
 sock2.listen(3)
 
+def server_unpickle(pickled_data):
+    return json.loads(pickle.loads(pickled_data))
+
 socket_list = (sock1, sock2)
 
 while True:
@@ -19,9 +22,9 @@ while True:
     for sock in ready:
         conn, addr = sock.accept()
         data = conn.recv(256)
-        print("Message: ", data)
+        print("Message received")
 
-    # print(pickle.loads(data))
+	print(server_unpickle(data))
 
     # conn.sendall(reply)
 
