@@ -19,9 +19,9 @@ temps = []
 # send payload_pickle via socket
 def PickleObject(temp, time):
 	id = 2
-	payload = [id, temp, time]
-	payloadTuple = tuple(payload)
-	payload_pickle = pickle.dumps(payloadTuple)
+	payload = {'id':id, 'temp':temp, 'time':time}
+	payload_pickle = pickle.dumps(payload)
+	return payload_pickle
 	
 def SendMessage(address, port, temp, time):
 	sentPickle = PickleObject(temp, time)
@@ -73,4 +73,4 @@ while True:
 			del temps[:]
 			SendMessage(ip_address, port, tempToSend, timeReadStr)
 			count = 0
-		time.sleep(1)
+		time.sleep(0.5)
