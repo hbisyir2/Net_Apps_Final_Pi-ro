@@ -5,10 +5,16 @@ import RPi.GPIO as GPIO
 import argparse
 import pickle
 
-LED1_red = 
-LED1_green = 
-LED2_red = 
-LED2_green = 
+LED1_red = 16
+LED1_green = 18
+LED2_red = 21
+LED2_green = 23
+
+Vin = 7
+
+GPIO.setmode(GPIO.BOARD)
+
+GPIO.setup(Vin, GPIO.IN)
 
 GPIO.setup(LED1_green, GPIO.OUT)
 GPIO.setup(LED1_red, GPIO.OUT)
@@ -29,8 +35,6 @@ disp1.clear()
 disp2.clear()
 disp1.write_display()
 disp2.write_display()
-disp1.set_colon(1)
-disp2.set_colon(1)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', required=True)
@@ -52,7 +56,7 @@ def UpdateDisplay(display, timeTaken):
 	displaym10 = minutesDiff//10
 	if displaym10 >= 10:
 		displaym10 = 9
-	displaym1 = minutesDiff%10:
+	displaym1 = minutesDiff%10
 	if displaym1 >= 10:
 		displaym1 = 9
 	displays10 = secondsDiff//10
@@ -82,10 +86,19 @@ def UpdateLED(LED_g, LED_r, temp):
 	else
 		GPIO.output(LED_r, GPIO.HIGH)
 		GPIO.output(LED_g, GPIO.LOW)
+
 		
 while True:
-	# wait for wake up message
+	print('Waiting for fire...')
+	if GPIO.input(7):
+		print('Fire detected!')
+		break
 	time.sleep(0.5)
+	
+	
+#while True:
+	# wait for wake up message
+	#time.sleep(0.5)
 		
 while True:
 	time.sleep(10)
