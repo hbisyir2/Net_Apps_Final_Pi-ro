@@ -16,7 +16,7 @@ print("connection complete")
 
 # Create JSON object from temp1 (float), time1 (string),
 # temp2 (float), and time2 (string) and pickle the object
-def server_pickle(id, temp, time):
+def server_pickle(id, time, temp):
     data = {"id": id, "time": time, "temp": temp}
     return pickle.dumps(json.dumps(data))
 
