@@ -1,6 +1,7 @@
 import socket
 import pickle
 import select
+import json
 
 sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -11,8 +12,10 @@ sock2.bind(('', 8001))
 sock1.listen(3)
 sock2.listen(3)
 
+
 def server_unpickle(pickled_data):
     return json.loads(pickle.loads(pickled_data))
+
 
 socket_list = (sock1, sock2)
 
@@ -24,9 +27,9 @@ while True:
         data = conn.recv(256)
         print("Message received")
 
-	print(server_unpickle(data))
+        print(server_unpickle(data))
 
-    # conn.sendall(reply)
+        # conn.sendall(reply)
 
 conn.close()
 sock.close()
