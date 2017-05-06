@@ -48,18 +48,21 @@ ip_address = args.i
 port = args.p
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind(('', port))
+sock.bind((ip_address, int(port)))
 sock.listen(3)
 
-LED1_dict = {'id': 1, 'temp': 0, 'time': 'now'}
-LED2_dict = {'id': 2, 'temp': 0, 'time': 'now'}
+rightNow = datetime.datetime.now()
+rightNow = rightNow.strftime('%Y/%m/%d %H:%M:%S')
+
+LED1_dict = {'id': 1, 'temp': 0, 'time': rightNow}
+LED2_dict = {'id': 2, 'temp': 0, 'time': rightNow}
 
 def UpdateDisplay(display, timeTaken):
 
-	if timeTaken == 'now':
-		display.clear()
-		display.write_display()
-		return
+    if timeTaken == 'now':
+        display.clear()
+        display.write_display()
+        return
     timeTaken = datetime.datetime.strptime(timeTaken, '%Y/%m/%d %H:%M:%S')
     timeNow = datetime.datetime.now()
     timeDiff = timeNow - timeTaken
@@ -90,10 +93,10 @@ def UpdateDisplay(display, timeTaken):
     display.write_display()
 
 def UpdateLED(LED_g, LED_r, temp):
-	if temp == 0:
-		GPIO.output(LED_r, GPIO.LOW)
+    if temp == 0:
+        GPIO.output(LED_r, GPIO.LOW)
         GPIO.output(LED_g, GPIO.LOW)
-		return
+        return
     lowThresh = 80
     highThresh = 90
     if temp <= lowThresh:
@@ -107,25 +110,24 @@ def UpdateLED(LED_g, LED_r, temp):
         GPIO.output(LED_g, GPIO.LOW)
 
 def UpdateTime():
-	global LED1_dict, LED2_dict, disp1, disp2
-	UpdateDisplay(disp1, LED1_dict['time'])
-	UpdateDisplay(disp2, LED2_dict['time'])
-	threading.Timer(1.0, UpdateTime).start()
-	print('Updating time on displays\n')
-
-conn, addr = sock.accept()
-print("Connected to server at", addr)
-
-while True:
-    print('Waiting for fire...')
-    if GPIO.input(7):
-        print('Fire detected!')
-        break
-    time.sleep(0.5)
+    global LED1_dict, LED2_dict, disp1, disp2
+    threading.Timer(1.0, UpdateTime).start()
+    UpdateDisplay(disp1, LED1_dict['time'])
+    UpdateDisplay(disp2, LED2_dict['time'])
+    print('Updating time on displays\n')
 
 UpdateTime()
 
+#while True:
+#    print('Waiting for fire...')
+#    if GPIO.input(7):
+#        print('Fire detected!')
+#        break
+#    time.sleep(0.5)
+
 while True:
+    conn, addr = sock.accept()
+    print("Connected to server at", addr)
     try:
         data = conn.recv(4096)
     except ConnectionResetError:
@@ -138,21 +140,21 @@ while True:
             d = json.loads(pickle.loads(data))
             # d is a list of dictionaries, each dictionary containing a time, id, and temp. Ex:
             # [{'time': '2017-05-05 15:29:43.658152', 'id': 1, 'temp': 22.1}, {'time': '2017-05-05 15:29:40.686621', 'id': 2, 'temp': 22.2}]
-			if len(d) == 1:
-				if d[0]['id'] == 1:
-					LED1_dict = d[0]
-				elif d[0]['id'] == 2:
-					LED2_dict = d[0]
-			else:
-				if d[0]['id'] == 1:
-					LED1_dict = d[0]
-					LED2_dict = d[1]
-				elif d[0]['id'] == 2:
-					LED1_dict = d[1]
-					LED2_dict = d[0]
+            if len(d) == 1:
+                if d[0]['id'] == 1:
+                    LED1_dict = d[0]
+                elif d[0]['id'] == 2:
+                    LED2_dict = d[0]
+            else:
+                if d[0]['id'] == 1:
+                    LED1_dict = d[0]
+                    LED2_dict = d[1]
+                elif d[0]['id'] == 2:
+                    LED1_dict = d[1]
+                    LED2_dict = d[0]
 			#UpdateDisplay(disp1, LED1_dict['time'])
 			#UpdateDisplay(disp2, LED2_dict['time'])
-			UpdateLED(LED1_green, LED1_red, LED1_dict['temp'])
-			UpdateLED(LED2_green, LED2_red, LED2_dict['temp'])
+            UpdateLED(LED1_green, LED1_red, LED1_dict['temp'])
+            UpdateLED(LED2_green, LED2_red, LED2_dict['temp'])
 
     #time.sleep(10)
