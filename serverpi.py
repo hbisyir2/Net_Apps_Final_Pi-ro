@@ -109,10 +109,10 @@ while True:
 
         # send data_list to mappi
         send_data(map_pickle(data_list))
-    except KeyboardInterrupt:
-        print("Server closed by user.")
-        if conn:
-            conn.close()
-        break
+    #except KeyboardInterrupt:
+    #    print("Server closed by user.")
+    #    if conn:
+    #        conn.close()
+    #    break
     except socket.timeout:
         print("Connection timed out...")
