@@ -2,7 +2,7 @@ import socket
 import pickle
 import select
 import json
-import RPi.GPIO as GPIO
+#mport RPi.GPIO as GPIO
 import time
 import sys
 import argparse
@@ -25,11 +25,11 @@ t2_port = args.p2
 map_ip = args.i3
 map_port = args.p3
 
-GPIO.setmode(GPIO.BOARD)
+#GPIO.setmode(GPIO.BOARD)
 
 Vin = 7
 
-GPIO.setup(Vin, GPIO.IN)
+#GPIO.setup(Vin, GPIO.IN)
 
 #while True:
 #    if GPIO.input(Vin):
@@ -63,7 +63,7 @@ def map_pickle(temp_list):
 
 
 def server_unpickle(pickled_data):
-    return json.loads(pickle.loads(pickled_data))
+    return pickle.loads(pickled_data)
 
 
 def send_data(obj1):
@@ -80,7 +80,7 @@ def send_data(obj1):
 def send_every_ten():
     global data_list
     send_data(map_pickle(data_list))
-    threading.Timer(10.0, send_every_ten).start()
+    threading.Timer(4.0, send_every_ten).start()
 
 socket_list = (sock1_temp, sock2_temp)
 
