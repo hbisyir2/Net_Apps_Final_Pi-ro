@@ -6,8 +6,12 @@ import RPi.GPIO as GPIO
 import time
 import sys
 
+GPIO.setmode(GPIO.BOARD)
+
+Vin = 7
+
 while True:
-    if GPIO.input(7):
+    if GPIO.input(Vin):
         print('Fire detected!')
         # send message to thermometers and maps via sockets
         break
