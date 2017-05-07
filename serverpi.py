@@ -10,6 +10,8 @@ GPIO.setmode(GPIO.BOARD)
 
 Vin = 7
 
+GPIO.setup(Vin, GPIO.IN)
+
 while True:
     if GPIO.input(Vin):
         print('Fire detected!')
