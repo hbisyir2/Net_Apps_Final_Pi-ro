@@ -28,7 +28,7 @@ def SendMessage(address, port, temp, time):
 		sentPickle = PickleObject(temp, time)
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect((address, int(port)))
-		s.send(sentPickle)
+		s.sendall(sentPickle)
 	except Exception as e:
 		print("Error sending message: " + str(e))
 	finally:
