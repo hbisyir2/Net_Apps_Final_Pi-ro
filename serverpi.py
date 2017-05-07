@@ -12,12 +12,12 @@ Vin = 7
 
 GPIO.setup(Vin, GPIO.IN)
 
-while True:
-    if GPIO.input(Vin):
-        print('Fire detected!')
+#while True:
+#    if GPIO.input(Vin):
+#        print('Fire detected!')
         # send message to thermometers and maps via sockets
-        break
-    time.sleep(1)
+#        break
+#    time.sleep(1)
 
 MAP1_ADDRESS = "localhost"
 
