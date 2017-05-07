@@ -5,6 +5,15 @@ import json
 import RPi.GPIO as GPIO
 import time
 import sys
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', required=True)
+parser.add_argument('-p', required=True)
+args = parser.parse_args()
+
+map_ip = args.i
+map_port = args.p
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -19,9 +28,7 @@ GPIO.setup(Vin, GPIO.IN)
 #        break
 #    time.sleep(1)
 
-MAP1_ADDRESS = "localhost"
-
-sock1_map_connect = (MAP1_ADDRESS, 8100)
+sock1_map_connect = (map_ip, int(map_port))
 sock1_map = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 sock1_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
