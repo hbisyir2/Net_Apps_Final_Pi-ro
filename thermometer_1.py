@@ -24,11 +24,15 @@ def PickleObject(temp, time):
 	return payload_pickle
 	
 def SendMessage(address, port, temp, time):
-	sentPickle = PickleObject(temp, time)
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.connect((address, port))
-	s.send(sentPickle)
-	s.close()
+	try:
+		sentPickle = PickleObject(temp, time)
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect((address, port))
+		s.send(sentPickle)
+	except Exception:
+		print("Error sending message: " Exception)
+	finally:
+		s.close()
 
 def read_temp_raw():
 	f = open(device_file, 'r')
