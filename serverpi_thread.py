@@ -2,10 +2,11 @@ import socket
 import pickle
 import select
 import json
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 import sys
 import argparse
+import threading
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i1', required=True)
@@ -23,11 +24,11 @@ t2_port = args.p2
 map_ip = args.i3
 map_port = args.p3
 
-# GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BOARD)
 
 Vin = 7
 
-# GPIO.setup(Vin, GPIO.IN)
+GPIO.setup(Vin, GPIO.IN)
 
 #while True:
 #    if GPIO.input(Vin):
@@ -51,7 +52,6 @@ sock2_temp.listen(3)
 sock1_temp.settimeout(5.0)
 sock2_temp.settimeout(5.0)
 
-
 def server_pickle(id, temp, time):
     data = {"id": id, "time": time, "temp": temp}
     return pickle.dumps(json.dumps(data))
@@ -72,10 +72,14 @@ def send_data(obj1):
         print("sent.")
 
     except socket.gaierror:
-        print("\nAddress", map_ip, "could not be found")
+        print("\nAddress", MAP1_ADDRESS, "could not be found")
     except ConnectionResetError:
         print("\nError: existing connection was closed.")
 
+def send_every_ten():
+    global data_list
+    send_data(map_pickle(data_list))
+    threading.Timer(10.0, send_every_ten).start()
 
 socket_list = (sock1_temp, sock2_temp)
 
@@ -91,32 +95,35 @@ while True:
         print("Retry in", sleep, "seconds")
         time.sleep(sleep)
 
-data_list = [{'time': '', 'id': 1, 'temp': 0}, {'time': '', 'id': 2, 'temp': 0}]
-
+		
+data_list = [{'id': 1, 'temp': 0, 'time': 'now'}, {'id': 2, 'temp': 0, 'time': 'now'}]
+send_every_ten()
+		
 while True:
     conn = None
     try:
-        time.sleep(5)
-
-        ready, _, _ = select.select(socket_list, [], [], 5)
+        #time.sleep(5)
+        ready, _, _ = select.select(socket_list, [], [])
 
         for sock in ready:
             conn, addr = sock.accept()
             data = conn.recv(256)
             print("Message received")
             d = server_unpickle(data)
-            data_id = d['id'] - 1
-            data_list[data_id]['time'] = d['time']
-            data_list[data_id]['temp'] = d['temp']
+            print(d)
+            if d['id'] == 1:
+                data_list[0] = d
+            else:
+                data_list[1] = d
+            #data_list.append(d.copy())
+            #sock.close()
 
         # send data_list to mappi
-        print(data_list)
         send_data(map_pickle(data_list))
-    except KeyboardInterrupt:
-        print("Server closed by user.")
-        if conn:
-            conn.close()
-        sock1_temp.close()
-        sock2_temp.close()
-        sock1_map.close()
-        break
+    #except KeyboardInterrupt:
+    #    print("Server closed by user.")
+    #    if conn:
+    #        conn.close()
+    #    break
+    except socket.timeout:
+        print("Connection timed out...")
