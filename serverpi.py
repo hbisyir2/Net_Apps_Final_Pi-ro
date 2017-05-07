@@ -34,15 +34,14 @@ sock1_map = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock1_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-sock1_temp.settimeout(5.0)
-sock2_temp.settimeout(5.0)
-
 sock1_temp.bind(('', 8000))
 sock2_temp.bind(('', 8001))
 
 sock1_temp.listen(3)
 sock2_temp.listen(3)
 
+sock1_temp.settimeout(5.0)
+sock2_temp.settimeout(5.0)
 
 def server_pickle(id, temp, time):
     data = {"id": id, "time": time, "temp": temp}
