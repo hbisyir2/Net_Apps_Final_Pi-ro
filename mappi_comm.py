@@ -47,6 +47,13 @@ args = parser.parse_args()
 ip_address = args.i
 port = args.p
 
+while True:
+    print('Waiting for fire...')
+    if GPIO.input(7):
+        print('Fire Detected!')
+        break
+    time.sleep(0.5)
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((ip_address, int(port)))
 sock.listen(3)
@@ -115,13 +122,6 @@ def UpdateTime():
     UpdateDisplay(disp1, LED1_dict['time'])
     UpdateDisplay(disp2, LED2_dict['time'])
     print('Updating time on displays\n')
-
-while True:
-    print('Waiting for fire...')
-    if GPIO.input(7):
-        print('Fire detected!')
-        break
-    time.sleep(0.5)
 
 UpdateTime()
 
