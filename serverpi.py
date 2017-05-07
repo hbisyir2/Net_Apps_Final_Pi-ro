@@ -114,3 +114,5 @@ while True:
         if conn:
             conn.close()
         break
+    except socket.timeout:
+        print("Connection timed out...")
