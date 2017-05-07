@@ -27,10 +27,10 @@ def SendMessage(address, port, temp, time):
 	try:
 		sentPickle = PickleObject(temp, time)
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect((address, port))
+		s.connect((address, int(port)))
 		s.send(sentPickle)
-	except Exception:
-		print("Error sending message: " Exception)
+	except Exception as e:
+		print("Error sending message: " + str(e))
 	finally:
 		s.close()
 
@@ -50,6 +50,7 @@ def read_temp():
 		temp_string = lines[1][equals_pos+2:]
 		temp_c = float(temp_string) / 1000.0
 		temp_f = temp_c * 9.0 / 5.0 + 32.0
+		print("Temperature Read: " , temp_f)
 		return temp_c, temp_f
 		
 # Parse command line arguments
