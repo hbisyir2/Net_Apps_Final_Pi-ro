@@ -2,15 +2,15 @@ import socket
 import pickle
 import select
 import json
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import time
 import sys
 
-GPIO.setmode(GPIO.BOARD)
+# GPIO.setmode(GPIO.BOARD)
 
 Vin = 7
 
-GPIO.setup(Vin, GPIO.IN)
+# GPIO.setup(Vin, GPIO.IN)
 
 #while True:
 #    if GPIO.input(Vin):
@@ -27,8 +27,8 @@ sock1_map = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock1_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-sock1_temp.settimeout(5.0)
-sock2_temp.settimeout(5.0)
+sock1_temp.setblocking(0)
+sock2_temp.setblocking(0)
 
 sock1_temp.bind(('', 8000))
 sock2_temp.bind(('', 8001))
@@ -76,27 +76,32 @@ while True:
         print("Retry in", sleep, "seconds")
         time.sleep(sleep)
 
+data_list = [{'time': '', 'id': 1, 'temp': 0}, {'time': '', 'id': 2, 'temp': 0}]
+
 while True:
     conn = None
     try:
         time.sleep(5)
 
-        data_list = []
-        ready, _, _ = select.select(socket_list, [], [])
+        ready, _, _ = select.select(socket_list, [], [], 5)
 
         for sock in ready:
             conn, addr = sock.accept()
             data = conn.recv(256)
             print("Message received")
             d = server_unpickle(data)
-            print(d)
-            data_list.append(d.copy())
-            sock.close()
+            data_id = d['id'] - 1
+            data_list[data_id]['time'] = d['time']
+            data_list[data_id]['temp'] = d['temp']
 
         # send data_list to mappi
+        print(data_list)
         send_data(map_pickle(data_list))
     except KeyboardInterrupt:
         print("Server closed by user.")
         if conn:
             conn.close()
+        sock1_temp.close()
+        sock2_temp.close()
+        sock1_map.close()
         break
