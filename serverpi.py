@@ -8,12 +8,20 @@ import sys
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', required=True)
-parser.add_argument('-p', required=True)
+parser.add_argument('-i1', required=True)
+parser.add_argument('-i2', required=True)
+parser.add_argument('-i3', required=True)
+parser.add_argument('-p1', required=True)
+parser.add_argument('-p2', required=True)
+parser.add_argument('-p3', required=True)
 args = parser.parse_args()
 
-map_ip = args.i
-map_port = args.p
+t1_ip = args.i1
+t1_port = args.p1
+t2_ip = args.i2
+t2_port = args.p2
+map_ip = args.i3
+map_port = args.p3
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -34,8 +42,8 @@ sock1_map = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock1_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock2_temp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-sock1_temp.bind(('', 8000))
-sock2_temp.bind(('', 8001))
+sock1_temp.bind((t1_ip, int(t1_port)))
+sock2_temp.bind((t2_ip, int(t2_port)))
 
 sock1_temp.listen(3)
 sock2_temp.listen(3)
