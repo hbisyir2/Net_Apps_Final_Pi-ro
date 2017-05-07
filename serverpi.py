@@ -105,7 +105,7 @@ while True:
             d = server_unpickle(data)
             print(d)
             data_list.append(d.copy())
-            sock.close()
+            #sock.close()
 
         # send data_list to mappi
         send_data(map_pickle(data_list))
