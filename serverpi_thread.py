@@ -7,6 +7,7 @@ import time
 import sys
 import argparse
 import threading
+import datetime
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i1', required=True)
@@ -58,7 +59,7 @@ def server_pickle(id, temp, time):
 
 
 def map_pickle(temp_list):
-    return pickle.dumps(json.dumps(temp_list))
+    return pickle.dumps(json.dumps(temp_list), protocol=1, fix_imports=False)
 
 
 def server_unpickle(pickled_data):
@@ -94,15 +95,13 @@ while True:
         sleep = 5
         print("Retry in", sleep, "seconds")
         time.sleep(sleep)
-
-		
+	
 data_list = [{'id': 1, 'temp': 0, 'time': 'now'}, {'id': 2, 'temp': 0, 'time': 'now'}]
 send_every_ten()
 		
 while True:
     conn = None
     try:
-        #time.sleep(5)
         ready, _, _ = select.select(socket_list, [], [])
 
         for sock in ready:
@@ -115,15 +114,10 @@ while True:
                 data_list[0] = d
             else:
                 data_list[1] = d
-            #data_list.append(d.copy())
-            #sock.close()
-
-        # send data_list to mappi
-        send_data(map_pickle(data_list))
-    #except KeyboardInterrupt:
-    #    print("Server closed by user.")
-    #    if conn:
-    #        conn.close()
-    #    break
+    except KeyboardInterrupt:
+        print("Server closed by user.")
+        if conn:
+            conn.close()
+        break
     except socket.timeout:
         print("Connection timed out...")
