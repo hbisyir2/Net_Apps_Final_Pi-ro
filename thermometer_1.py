@@ -64,7 +64,7 @@ port = args.p
 
 while True:
 	temp_c, temp_f = read_temp()
-	if temp_f == 0:
+	if temp_f == 32:
 		break
 	else:
 		temps.append(temp_f)
