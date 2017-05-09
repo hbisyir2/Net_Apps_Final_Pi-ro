@@ -40,11 +40,11 @@ disp1.write_display()
 disp2.write_display()
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', required=True)
+parser.add_argument('-i')
 parser.add_argument('-p', required=True)
 args = parser.parse_args()
 
-ip_address = args.i
+ip_address = ""
 port = args.p
 
 while True:
