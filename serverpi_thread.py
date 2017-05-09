@@ -10,17 +10,17 @@ import threading
 import datetime
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-i1', required=True)
-parser.add_argument('-i2', required=True)
+parser.add_argument('-i1')
+parser.add_argument('-i2')
 parser.add_argument('-i3', required=True)
 parser.add_argument('-p1', required=True)
 parser.add_argument('-p2', required=True)
 parser.add_argument('-p3', required=True)
 args = parser.parse_args()
 
-t1_ip = args.i1
+t1_ip = ""
 t1_port = args.p1
-t2_ip = args.i2
+t2_ip = ""
 t2_port = args.p2
 map_ip = args.i3
 map_port = args.p3
